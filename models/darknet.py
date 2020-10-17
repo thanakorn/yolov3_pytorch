@@ -3,18 +3,9 @@ from __future__ import division
 import torch 
 import torch.nn as nn
 import torch.nn.functional as F 
-from torch.autograd import Variable
 import numpy as np
-from utilities import util
 
-def get_test_input():
-    img = cv2.imread("dog-cycle-car.png")
-    img = cv2.resize(img, (416,416))          #Resize to the input dimension
-    img_ =  img[:,:,::-1].transpose((2,0,1))  # BGR -> RGB | H X W C -> C X H X W 
-    img_ = img_[np.newaxis,:,:,:]/255.0       #Add a channel at 0 (for batch) | Normalise
-    img_ = torch.from_numpy(img_).float()     #Convert to float
-    img_ = Variable(img_)                     # Convert to Variable
-    return img_
+from utilities.util import *
 
 def parse_cfg(cfgfile):
     """
@@ -167,7 +158,7 @@ class Darknet(nn.Module):
         self.blocks = parse_cfg(cfgfile)
         self.net_info, self.module_list = create_modules(self.blocks)
         
-    def forward(self, x, CUDA):
+    def forward(self, x, CUDA=False):
         modules = self.blocks[1:]
         outputs = {}   #We cache the outputs for the route layer
         
